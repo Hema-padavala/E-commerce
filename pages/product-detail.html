@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - ShopHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .product-detail {
+            padding: calc(70px + var(--spacing-8)) 0 var(--spacing-8);
+        }
+
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-12);
+            align-items: start;
+        }
+
+        .product-images {
+            position: sticky;
+            top: calc(70px + var(--spacing-4));
+        }
+
+        .main-image {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-bottom: var(--spacing-4);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+
+        .main-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: var(--spacing-4);
+        }
+
+        .product-category {
+            color: var(--primary-color);
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-2);
+        }
+
+        .product-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-4);
+            line-height: 1.2;
+        }
+
+        .product-price {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-6);
+        }
+
+        .product-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-6);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: var(--spacing-4);
+            margin-bottom: var(--spacing-6);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            background: none;
+            border: none;
+            padding: var(--spacing-3) var(--spacing-4);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .quantity-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .quantity-display {
+            padding: var(--spacing-3) var(--spacing-4);
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .add-to-cart-btn {
+            flex: 1;
+            padding: var(--spacing-4) var(--spacing-6);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-2);
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .add-to-cart-btn:active {
+            transform: translateY(0);
+        }
+
+        .product-features {
+            margin-top: var(--spacing-8);
+            padding-top: var(--spacing-8);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-3);
+            color: var(--text-secondary);
+        }
+
+        .features-list li i {
+            color: var(--success-color);
+            font-size: var(--font-size-sm);
+        }
+
+        .related-products {
+            padding: var(--spacing-12) 0;
+            background: var(--secondary-color);
+        }
+
+        .related-products h2 {
+            text-align: center;
+            margin-bottom: var(--spacing-8);
+        }
+
+        @media (max-width: 768px) {
+            .product-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-6);
+            }
+
+            .product-images {
+                position: static;
+            }
+
+            .product-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .quantity-selector {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>ShopHub</h2>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link">Products</a>
+                <a href="cart.html" class="nav-link cart-link">
+                    Cart <span id="cart-count" class="cart-count">0</span>
+                </a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="signup.html" class="nav-link">Signup</a>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail">
+        <div class="container">
+            <div class="product-container" id="product-container">
+                <!-- Product content will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="related-products">
+        <div class="container">
+            <h2 class="section-title">Related Products</h2>
+            <div class="products-grid" id="related-products">
+                <!-- Related products will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ShopHub</h3>
+                    <p>Your ultimate shopping destination for quality products.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="products.html?category=electronics">Electronics</a></li>
+                        <li><a href="products.html?category=fashion">Fashion</a></li>
+                        <li><a href="products.html?category=home">Home & Garden</a></li>
+                        <li><a href="products.html?category=sports">Sports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: info@shophub.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/products.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Product detail page functionality
+        let currentProduct = null;
+        let currentQuantity = 1;
+
+        function loadProductDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+            
+            if (!productId || !window.productManager) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            currentProduct = window.productManager.getProductById(productId);
+            
+            if (!currentProduct) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            renderProductDetail();
+            loadRelatedProducts();
+        }
+
+        function renderProductDetail() {
+            const container = document.getElementById('product-container');
+            
+            container.innerHTML = `
+                <div class="product-images">
+                    <div class="main-image">
+                        <img src="${currentProduct.image}" alt="${currentProduct.name}" id="main-image">
+                    </div>
+                    <div class="thumbnail-images">
+                        <div class="thumbnail active" onclick="changeImage('${currentProduct.image}')">
+                            <img src="${currentProduct.image}" alt="${currentProduct.name}">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('${currentProduct.image}')">
+                            <img src="${currentProduct.image}" alt="${currentProduct.name}">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('${currentProduct.image}')">
+                            <img src="${currentProduct.image}" alt="${currentProduct.name}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <div class="product-category">${currentProduct.category}</div>
+                    <h1 class="product-title">${currentProduct.name}</h1>
+                    <div class="product-price">${window.app ? window.app.formatCurrency(currentProduct.price) : `$${currentProduct.price}`}</div>
+                    <p class="product-description">${currentProduct.description}</p>
+                    
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button class="quantity-btn" onclick="updateQuantity(-1)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div class="quantity-display" id="quantity-display">${currentQuantity}</div>
+                            <button class="quantity-btn" onclick="updateQuantity(1)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart()">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                    
+                    <div class="product-features">
+                        <h3>Features</h3>
+                        <ul class="features-list">
+                            <li><i class="fas fa-check"></i> High-quality materials</li>
+                            <li><i class="fas fa-check"></i> Fast shipping</li>
+                            <li><i class="fas fa-check"></i> 30-day return policy</li>
+                            <li><i class="fas fa-check"></i> Customer support</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeImage(imageSrc) {
+            const mainImage = document.getElementById('main-image');
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            
+            mainImage.src = imageSrc;
+            
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+            event.target.closest('.thumbnail').classList.add('active');
+        }
+
+        function updateQuantity(change) {
+            const newQuantity = currentQuantity + change;
+            if (newQuantity >= 1 && newQuantity <= 10) {
+                currentQuantity = newQuantity;
+                document.getElementById('quantity-display').textContent = currentQuantity;
+            }
+        }
+
+        function addToCart() {
+            if (!currentProduct) return;
+            
+            // Add to cart with quantity
+            for (let i = 0; i < currentQuantity; i++) {
+                if (window.cartManager) {
+                    window.cartManager.addToCart(currentProduct);
+                }
+            }
+            
+            // Reset quantity
+            currentQuantity = 1;
+            document.getElementById('quantity-display').textContent = currentQuantity;
+            
+            // Show success message
+            if (window.app) {
+                window.app.showToast(`${currentQuantity} ${currentProduct.name} added to cart!`, 'success');
+            }
+        }
+
+        function loadRelatedProducts() {
+            const relatedContainer = document.getElementById('related-products');
+            if (!relatedContainer || !window.productManager) return;
+            
+            // Get products from same category
+            const relatedProducts = window.productManager.getProductsByCategory(currentProduct.category)
+                .filter(product => product.id !== currentProduct.id)
+                .slice(0, 4);
+            
+            if (relatedProducts.length > 0) {
+                window.productManager.renderProducts(relatedProducts, relatedContainer);
+            } else {
+                // Show featured products if no related products
+                const featuredProducts = window.productManager.getFeaturedProducts()
+                    .filter(product => product.id !== currentProduct.id)
+                    .slice(0, 4);
+                window.productManager.renderProducts(featuredProducts, relatedContainer);
+            }
+        }
+
+        // Initialize product detail page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProductDetail();
+        });
+    </script>
+</body>
+</html> 
